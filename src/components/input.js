@@ -21,12 +21,15 @@ export default function Input(props) {
         setPayload(event.target.value);
     }
   return (
-    <div className="text-left">
-        <label 
-            htmlFor="success" 
-            className="block mb-2 text-sm font-Eina03 font-bold"
-            >{label}</label>
-        <div className='relative'>
+    <div className="text-left z-[1]">
+        {
+            label ? 
+            <label 
+                htmlFor="success" 
+                className="block mb-2 text-sm font-Eina03 font-bold"
+                >{label}</label> : ""
+        }
+        <div className='relative z-[2]'>
             <input
                 id="success"
                 {...props}
@@ -44,14 +47,11 @@ export default function Input(props) {
                     onClick={handleClick}
                 />) : <></>
             }
+            {
+                errors.length ? 
+                <p className="mt-[8px] text-[12px] shadow-sm text-[#D94042] absolute left-[0] z-index-[3] bg-white right-[0] px-3 py-2" dangerouslySetInnerHTML={{__html: errors.join(' ')}}></p> : <></>
+            }
         </div>
-        
-        {
-            errors.length ? 
-            <p className="mt-[8px] text-sm text-[#D94042]" dangerouslySetInnerHTML={{__html: errors.join('<br />')}}>
-                
-            </p> : <></>
-        }
     </div>
   );
 }

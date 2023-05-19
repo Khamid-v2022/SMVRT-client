@@ -12,9 +12,9 @@ import Link from 'next/link';
  
 import VerifyEmailAddress from '@/popups/verify-email-address';
 import ServerError from '@/popups/server-error';
+import EmailVerified from '@/popups/email-verified'
 
-
-export default function SignUp() {
+export default function SignUpByInvitation() {
     const [errors, setErrors] = useState({
         'email': [],
         'password': [],
@@ -29,6 +29,9 @@ export default function SignUp() {
         server_error: {
             visible: false,
             message: '',
+        },
+        email_verified: {
+            visible: false,
         }
     })
 
@@ -56,9 +59,11 @@ export default function SignUp() {
         setErrors(messages);
 
         if ( ! Object.values(messages).flat(1).length) {
+            const team = location.pathname.split('/').pop();
             api.signup({
                     ...form, 
-                    redirect: `${location.protocol + "//" + location.host}`
+                    redirect: `${location.protocol + "//" + location.host}`,
+                    team,
                 })
                 .then(res => res.json())
                 .then((data) => {
@@ -81,13 +86,6 @@ export default function SignUp() {
                             visible: true,
                         }
                     })
-
-                    // setForm({
-                    //     email: '',
-                    //     password: '',
-                    //     confirm_password: '',
-                    //     terms_and_conditions: true
-                    // })
                 })
         }
     }
@@ -135,11 +133,24 @@ export default function SignUp() {
         })
     }
 
+    useEffect(() => {
+        const url = new URLSearchParams(location.search);
+        const hasEmail = url.get('email');
+        
+        if (hasEmail) {
+            setForm({
+                ...form,
+                email: hasEmail
+            })
+            window.history.pushState({}, document.title, location.pathname);
+        }
+    }, []);
+
     return (<div className='bg-[#F6FAFF] min-h-screen pt-[30px] px-[30px] lg:px-0'>
         <div className='container text-center flex flex-col justify-center h-full max-w-[400px] mx-auto'>
             <Image className='mx-auto mb-[12px]' src={LogoSVG} width={57} height={57} alt="logo" />
-            <h3 className='text-black text-[36px] mb-[12px] font-Eina04 font-bold'>Sign up</h3>
-            <p className='text-[#8792A8] text-[16px] px-3 mb-[32px]'>Discover the all-in-one solution to manage your legal matters </p>
+            <h3 className='text-black text-[36px] mb-[12px] font-Eina04 font-bold'>Sign up by invitation</h3>
+            <p className='text-[#8792A8] text-[16px] px-3 mb-[32px]'>You’re invited to join the team, in order to continue, please enter your detail belows. </p>
             <div className="mb-[20px]">
                 <Input 
                     label="Email Address"
@@ -147,6 +158,8 @@ export default function SignUp() {
                     type="email"
                     value={form.email}
                     errors={errors.email}
+                    disabled="disabled"
+                    readOnly="readonly"
                     onInput={(e) => onChange('email', e.target.value, rules.email)}
                 ></Input>
             </div>
@@ -177,9 +190,9 @@ export default function SignUp() {
                     className="bg-[#1860CC]"
                 ></Button>
             </div>
-            <div className="mb-[18px]">
+            {/* <div className="mb-[18px]">
                 <GoogleAuthBtn />
-            </div>
+            </div> */}
             <label className='mb-[14px]'>
                 <span className='text-[#222] text-[14px]'>
                     <div className="mb-4 inline-block lg:flex items-center justify-center">
@@ -210,6 +223,10 @@ export default function SignUp() {
             onClose={() => {setPopup({...popup, server_error: { visible: false }})}}
         />
 
-
+        <EmailVerified
+            open={popup.email_verified.visible} 
+            title="Email verified"
+            onClose={() => {setPopup({...popup, email_verified: { visible: false }})}}
+        />
     </div>);
 }
