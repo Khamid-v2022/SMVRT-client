@@ -4,7 +4,7 @@ import Input from "./input";
 import { getAttrFromName } from '@/utils/helpers'
 import Select from "./select";
 
-export default function MemberAdd({ label, roles, onUpdate, value }) {
+export default function MemberAdd({ label, roles, onUpdate, value, disabledRoles = [] }) {
     const [members, setMembers] = useState([...value])
     const [member, setMember] = useState({
         name: '',
@@ -22,6 +22,13 @@ export default function MemberAdd({ label, roles, onUpdate, value }) {
 
     const regexpEmail = /^\w+([-+.']\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$/;
 
+    const canAdd = () => {
+        const filled = !member.name || !member.email ? true: false
+        const exist = members.find(item => item.email == member.email)
+        const isEmail = regexpEmail.test(member.email)
+        return ! filled && ! exist && isEmail
+    }
+
     useEffect(() => {
         if (value && value.length) {
             setToggle(true)
@@ -30,7 +37,7 @@ export default function MemberAdd({ label, roles, onUpdate, value }) {
 
     const handleAdd = (e) => {
         e.preventDefault();
-        if (member.name && member.email && regexpEmail.test(member.email)) {
+        if (canAdd()) {
             const defaultRole = roles[0] ?? false
             const newList = [
                 ...members,
@@ -120,7 +127,7 @@ export default function MemberAdd({ label, roles, onUpdate, value }) {
                                     value={member.email}
                                 />
                             </div>
-                            <a href="#" disabled={!member.name || !member.email ? true: false} onClick={handleAdd} className={`font-bold font-Eina03 inline-block ${ ! member.name ||  ! member.email || ! regexpEmail.test(member.email) ? 'bg-[#B8C2CC]' : 'bg-[#1860CC]'} text-white text-[12px] rounded-[6px] py-[12px] text-center`}>
+                            <a href="#" onClick={handleAdd}  className={`font-bold font-Eina03 inline-block ${ ! canAdd() ? 'bg-[#B8C2CC]' : 'bg-[#1860CC]'} text-white text-[12px] rounded-[6px] py-[12px] text-center`}>
                                 Add
                             </a>
                         </div>
@@ -147,7 +154,7 @@ export default function MemberAdd({ label, roles, onUpdate, value }) {
                                                 roles.length ? (
                                                     <div className="ml-auto">
                                                         <Select 
-                                                            options={roles}
+                                                            options={roles.filter(option => ! disabledRoles.includes(option.label))}
                                                             className=" px-[10px] !text-[12px] border-none !py-[0]"
                                                             value={member.role}
                                                             onSelect={(event) => handleUpdateRoleMember(member, event)}

@@ -26,7 +26,8 @@ export default function NewProjectLayout({ children }) {
             slug: 'step-2'
         },
         {
-            label: 'Approvals & Signatures',
+            // label: 'Approvals & Signatures',
+            label: 'Signatures',
             slug: 'step-3'
         },
         {
@@ -54,6 +55,7 @@ export default function NewProjectLayout({ children }) {
         name: '',
         notes: '',
         duedate: '',
+        reminderdate: '',
         team: '',
         members: [],
         external_collaborators: [],
