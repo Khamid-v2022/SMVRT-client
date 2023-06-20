@@ -2,7 +2,7 @@
 
 import { setCookie } from "@/utils/helpers"
 
-const API_ENDPOINT = 'https://zendevs.us'
+const API_ENDPOINT = 'https://smvrt-api.dev'
 const getToken = () => {
     return localStorage.getItem('token') ?? ''
 }
