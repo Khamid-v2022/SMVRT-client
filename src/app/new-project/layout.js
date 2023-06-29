@@ -54,6 +54,7 @@ export default function NewProjectLayout({ children }) {
 
     const [project, setProject] = useState({
         name: '',
+        leads: {},
         notes: '',
         duedate: '',
         reminderdate: '',
@@ -119,6 +120,11 @@ export default function NewProjectLayout({ children }) {
             }
         }
 
+        if (activeStep == steps[1].slug) {
+            const existLead = !! Object.values(project.leads).filter(value => value).length
+            return existLead
+        }
+
         if (activeStep == steps[3].slug) {
            if ( ! project.documentname || ! project.document) {
             return false;
@@ -128,7 +134,7 @@ export default function NewProjectLayout({ children }) {
         return true
     }
 
-    const handleCreateProject = () => {
+    const handleCreateProject = async () => {
         setPopup({
             ...popup,
             server_success: {
@@ -138,9 +144,20 @@ export default function NewProjectLayout({ children }) {
             }
         })
 
-        const delay = 5000; // 5 seconds
+        const fd = new FormData;
+        fd.append('file', project.document)
+            
+        const content = await api.convert_file_to_html(fd)
+                .then((data) => {
+                    return new Promise((resolve, reject) => resolve(data.data))
+            });
 
-        setTimeout(() => {
+        api.openAI_summarize_document({
+            content,
+        }).then((data) => {
+            
+            console.log({ data })
+
             setPopup({
                 ...popup,
                 server_success: {
@@ -192,7 +209,7 @@ export default function NewProjectLayout({ children }) {
                 setActiveStep("step-4");
                 push("/new-project/step-4")
             })
-        }, delay);
+        })
     }
 
     useEffect(() => {
