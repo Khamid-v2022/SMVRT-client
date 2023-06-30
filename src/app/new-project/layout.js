@@ -121,8 +121,8 @@ export default function NewProjectLayout({ children }) {
         }
 
         if (activeStep == steps[1].slug) {
-            const existLead = !! Object.values(project.leads).filter(value => value).length
-            return existLead
+            // const existLead = !! Object.values(project.leads).filter(value => value).length
+            // return existLead
         }
 
         if (activeStep == steps[3].slug) {
@@ -183,6 +183,10 @@ export default function NewProjectLayout({ children }) {
     
             project.members.forEach(member => {
                 fd.append('members[]', JSON.stringify(member))
+            })
+
+            project.external_collaborators.forEach(member => {
+                fd.append('external_collaborators[]', JSON.stringify(member))
             })
     
             project.signatories.forEach(member => {
