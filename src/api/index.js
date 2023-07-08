@@ -2,7 +2,8 @@
 
 import { setCookie } from "@/utils/helpers"
 
-const API_ENDPOINT = 'https://zendevs.us'
+// const API_ENDPOINT = 'https://zendevs.us'
+const API_ENDPOINT = 'http://localhost:8080'
 const getToken = () => {
     return localStorage.getItem('token') ?? ''
 }
